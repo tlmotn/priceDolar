@@ -18,7 +18,7 @@
   <script>
     async function fetchPrice() {
       try {
-        const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=irr");
+        const response = await fetch("https://api.nobitex.ir/v2/orderbook/USDT/IRR");
         const data = await response.json();
         const price = data.tether.irr;
         document.getElementById("price").textContent = price.toLocaleString('fa-IR') + " تومان";
