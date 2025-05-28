@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>قیمت لحظه‌ای تتر</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>قیمت لحظه‌ای تتر  به ریال</h1>
+    <div id="price">در حال دریافت قیمت...</div>
+  </div>
+
+  <footer>
+    <p>© 2025 @TLMOTN </p>
+  </footer>
+
+  <script>
+    async function fetchPrice() {
+      try {
+        const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=irr");
+        const data = await response.json();
+        const price = data.tether.irr;
+        document.getElementById("price").textContent = price.toLocaleString('fa-IR') + " تومان";
+      } catch (error) {
+        document.getElementById("price").textContent = "خطا در دریافت قیمت";
+        console.error("خطا:", error);
+      }
+    }
+
+    fetchPrice();
+    setInterval(fetchPrice, 10000); // هر 10 ثانیه به‌روزرسانی
+  </script>
+</body>
+</html>
