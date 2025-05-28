@@ -1,39 +1,177 @@
-body {
-  font-family: Vazirmatn, sans-serif;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  color: #fff;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>قیمت لحظه‌ای تتر به ریال</title>
+  <style>
+    /* Reset و تنظیمات پایه */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #333;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    #price {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #27ae60;
+      margin: 20px 0;
+      direction: ltr;
+      letter-spacing: 1px;
+    }
+    
+    #last-update {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+    
+    .price-container {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    footer {
+      margin-top: 30px;
+      color: #7f8c8d;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    
+    /* انیمیشن برای زمان بروزرسانی */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .updating {
+      animation: pulse 1.5s infinite;
+    }
+    
+    /* حالت تاریک */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, #232526 0%, #414345 100%);
+        color: #f5f5f5;
+      }
+      
+      .container {
+        background: #2d3436;
+      }
+      
+      h1 {
+        color: #f5f5f5;
+      }
+      
+      .price-container {
+        background: #3d4547;
+      }
+      
+      #price {
+        color: #2ecc71;
+      }
+    }
+    
+    /* رسپانسیو برای موبایل */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 1.3rem;
+      }
+      
+      #price {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>قیمت لحظه‌ای تتر (USDT) به ریال</h1>
+    <div class="price-container">
+      <div id="price">در حال دریافت قیمت...</div>
+    </div>
+    <div id="last-update"></div>
+  </div>
 
-.container {
-  margin-top: 100px;
-}
+  <footer>
+    <p>© 2025 @TLMOTN | قیمت از صرافی نوبیتکس</p>
+  </footer>
 
-h1 {
-  font-size: 2.5em;
-  margin-bottom: 20px;
-}
+  <script>
+    async function fetchPrice() {
+      try {
+        document.getElementById("price").classList.add("updating");
+        
+        const response = await fetch("https://api.nobitex.ir/v2/orderbook/USDT/IRR");
+        const data = await response.json();
+        
+        // قیمت فروش (اولین قیمت در لیست asks)
+        const sellPrice = Math.round(data.asks[0][0]);
+        
+        document.getElementById("price").innerHTML = 
+          `<span>${sellPrice.toLocaleString('fa-IR')}</span> <small>تومان</small>`;
+        
+        const now = new Date();
+        document.getElementById("last-update").innerHTML = 
+          `<i>آخرین بروزرسانی: ${now.toLocaleTimeString('fa-IR')}</i>`;
+          
+      } catch (error) {
+        document.getElementById("price").innerHTML = 
+          `<span style="color:#e74c3c">خطا در دریافت قیمت</span>`;
+        console.error("خطا:", error);
+      } finally {
+        document.getElementById("price").classList.remove("updating");
+      }
+    }
 
-#price {
-  font-size: 3em;
-  margin-top: 20px;
-  font-weight: bold;
-  color: #00ffcc;
-  animation: pulse 1.5s infinite;
-}
-
-footer {
-  position: fixed;
-  bottom: 10px;
-  width: 100%;
-  font-size: 0.9em;
-  color: #ccc;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 1; }
-}
+    // اولین بار اجرا شود
+    fetchPrice();
+    
+    // هر 30 ثانیه به‌روزرسانی شود
+    setInterval(fetchPrice, 15000);
+  </script>
+</body>
+</html>
