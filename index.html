@@ -49,7 +49,8 @@
   <script>
     async function fetchPrice() {
       try {
-        const response = await fetch("https://api.nobitex.ir/v2/orderbook/USDT/IRR");
+  // تغییر آدرس API به نسخه جدید Nobitex
+        const response = await fetch("https://api.nobitex.ir/market/orderbook/USDTIRT");
         const data = await response.json();
         
         // قیمت فروش (اولین قیمت در لیست asks)
