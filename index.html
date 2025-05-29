@@ -49,16 +49,15 @@
   <script>
     async function fetchPrice() {
       try {
-  // تغییر آدرس API به نسخه جدید Nobitex
-        const response = await fetch("wss://wss.nobitex.ir/connection/websocket");
+        const response = await fetch("https://api.nobitex.ir/market/stats");
         const data = await response.json();
         
-        // قیمت فروش (اولین قیمت در لیست asks)
-        const sellPrice = data.asks[0][0];
-        
+        // گرفتن قیمت latest از جفت USDTIRT
+        const sellPrice = data.stats.USDTIRT.latest;
+
         document.getElementById("price").textContent = 
           sellPrice.toLocaleString('fa-IR') + " تومان";
-        
+
         const now = new Date();
         document.getElementById("last-update").textContent = 
           "آخرین بروزرسانی: " + now.toLocaleTimeString('fa-IR');
